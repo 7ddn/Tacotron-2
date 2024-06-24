@@ -6,7 +6,6 @@ import collections
 import numpy as np
 import tensorflow as tf
 from tacotron.models.attention import _compute_attention
-from tensorflow.contrib.rnn import RNNCell
 from tensorflow.python.framework import ops, tensor_shape
 from tensorflow.python.ops import array_ops, check_ops, rnn_cell_impl, tensor_array_ops
 from tensorflow.python.util import nest
@@ -15,7 +14,7 @@ _zero_state_tensors = rnn_cell_impl._zero_state_tensors
 
 
 
-class TacotronEncoderCell(RNNCell):
+class TacotronEncoderCell(tf.compat.v1.nn.rnn_cell.BasicRNNCell):
 	"""Tacotron 2 Encoder Cell
 	Passes inputs through a stack of convolutional layers then through a bidirectional LSTM
 	layer to predict the hidden representation vector (or memory)
@@ -66,7 +65,7 @@ class TacotronDecoderCellState(
 		"""
 		return super(TacotronDecoderCellState, self)._replace(**kwargs)
 
-class TacotronDecoderCell(RNNCell):
+class TacotronDecoderCell(tf.compat.v1.nn.rnn_cell.BasicRNNCell):
 	"""Tactron 2 Decoder Cell
 	Decodes encoder output and previous mel frames into next r frames
 

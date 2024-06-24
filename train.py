@@ -32,12 +32,14 @@ def read_seq(file):
 		return [0, 0, 0], ''
 
 def prepare_run(args):
+	print(dir(hparams))
 	modified_hp = hparams.parse(args.hparams)
 	os.environ['TF_CPP_MIN_LOG_LEVEL'] = str(args.tf_log_level)
 	run_name = args.name or args.model
 	log_dir = os.path.join(args.base_dir, 'logs-{}'.format(run_name))
 	os.makedirs(log_dir, exist_ok=True)
 	infolog.init(os.path.join(log_dir, 'Terminal_train_log'), run_name, args.slack_url)
+	print(dir(modified_hp))
 	return log_dir, modified_hp
 
 def train(args, log_dir, hparams):
@@ -50,7 +52,7 @@ def train(args, log_dir, hparams):
 		log('Tacotron Train\n')
 		log('###########################################################\n')
 		checkpoint = tacotron_train(args, log_dir, hparams)
-		tf.reset_default_graph()
+		tf.compat.v1.reset_default_graph()
 		#Sleep 1/2 second to let previous graph close and avoid error messages while synthesis
 		sleep(0.5)
 		if checkpoint is None:
@@ -65,7 +67,7 @@ def train(args, log_dir, hparams):
 		log('Tacotron GTA Synthesis\n')
 		log('###########################################################\n')
 		input_path = tacotron_synthesize(args, hparams, checkpoint)
-		tf.reset_default_graph()
+		tf.compat.v1.reset_default_graph()
 		#Sleep 1/2 second to let previous graph close and avoid error messages while Wavenet is training
 		sleep(0.5)
 		GTA_state = 1

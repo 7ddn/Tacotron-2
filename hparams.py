@@ -1,8 +1,36 @@
 import numpy as np
-import tensorflow as tf
+
+class AttrDict():
+	def __init__(self,  **kwargs):
+		for key, value in kwargs.items():
+			setattr(self, key, value)
+
+	def parse(self, argstring):
+		for s in argstring.split(','):
+			if len(s.split('=')) < 2:
+				continue
+			key = s.split('=')[0] 
+			value = s.split('=')[1]
+			try:
+				value_ = int(value)
+			except ValueError:
+				try:
+					value_ = float(value)
+				except ValueError:
+					value_ = value
+			setattr(self, key, value_)
+		return self
+	
+	def values(self):
+		values = {}
+		for key in dir(self):
+			values[key] = getattr(self, key)
+		return values
+			
+
 
 # Default hyperparameters
-hparams = tf.contrib.training.HParams(
+hparams = AttrDict(
 	# Comma-separated list of cleaners to run on text prior to training and eval. For non-English
 	# text, you may want to use "basic_cleaners" or "transliteration_cleaners".
 	cleaners='english_cleaners',
